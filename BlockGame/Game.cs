@@ -24,6 +24,7 @@ namespace BlockGame
         ShaderProgram blockProgram;
 
         float xAxis = 0f;
+        float yAxis = 0f;
         float angle = 0f;
         public Game() : base(GameWindowSettings.Default, NativeWindowSettings.Default) {
             Title = "BlockGame";
@@ -65,12 +66,13 @@ namespace BlockGame
         protected override void OnUpdateFrame(FrameEventArgs frameArgs)
         {
             //cube.transformation = Matrix4.CreateRotationY(angle += 0.0001f) * Matrix4.CreateRotationX(angle += 0.0001f) * Matrix4.CreateTranslation(0, 0, -3f);
-            //block.SetRotate(angle, angle, angle);
-            block.SetLocation(new Vector3(0f, 0f, -3f));
+            block.SetRotate(angle, angle, angle);
+            block.SetLocation(new Vector3(xAxis, yAxis, 0));
             //block.RotateY(angle);
             //block.RotateX(angle);
             //block.RotateZ(angle);
-            xAxis -= 0.0001f;
+            xAxis += 0.0002f;
+            yAxis += 0.0001f;
             angle += 0.0001f;
             camera.UpdateCameraVectors();
             base.OnUpdateFrame(frameArgs);

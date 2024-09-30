@@ -11,7 +11,7 @@ namespace BlockGame.Rendering
         //save angles here
         public Renderable(Vector3 location, Mesh mesh) // make this scoped?
         {
-            _transformations = Matrix4.CreateTranslation(location) * Matrix4.CreateTranslation(0, 0, -3f);
+            _transformations = Matrix4.CreateTranslation(location) * Matrix4.CreateTranslation(0, 0, 0);
             _mesh = mesh;
             SetLocation(location);
         }
@@ -36,28 +36,15 @@ namespace BlockGame.Rendering
             _transformations = Matrix4.CreateRotationZ(angleZ) * Matrix4.CreateRotationY(angleY) * Matrix4.CreateRotationX(angleX) * Matrix4.CreateTranslation(0, 0, -3f);
         }
 
-        public void SetLocation(Vector3 location)
-        {    // Extract the rotation part of the matrix (the upper-left 3x3 part)
+        public void SetLocation(Vector3 location) // camera is broken maybe?
+        {
             Matrix4 rotationMatrix = _transformations.ClearTranslation();
-
-            // Create a new translation matrix
             Matrix4 translationMatrix = Matrix4.CreateTranslation(location);
 
-            // Combine the translation and rotation to form the new transformation matrix
             _transformations = rotationMatrix * translationMatrix;
 
             Console.WriteLine(_transformations.ToString());
             return;
-            //Matrix4 rotationMatrix = _transformations.ClearTranslation();
-
-            //// Apply the new translation (position) while keeping the rotation intact
-            //_transformations = Matrix4.CreateTranslation(location) * rotationMatrix;
-            //return;
-            //Matrix4 translationMatrix = Matrix4.CreateTranslation(location);
-
-            //// Apply the translation to the existing transformations (if any)
-            //_transformations = translationMatrix * _transformations;
-            //Console.WriteLine(_transformations.ToString());
         }
 
         public void Render(ShaderProgram program, Camera camera)

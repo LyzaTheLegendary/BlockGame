@@ -31,7 +31,7 @@ namespace BlockGame.Rendering
             };
 
             UpdateFov(height, width);
-            Position = new Vector3(0f, 0f, -3f);
+            Position = new Vector3(0f, 0f, 0f);
             WorldUp = Vector3.UnitY;
             Yaw = yaw;
             Pitch = pitch;
