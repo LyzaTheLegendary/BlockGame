@@ -1,25 +1,36 @@
 ﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace BlockGame.Rendering
 {
-    public class Camera
+    public class Camera3D
     {
         private FovInfo fovInfo;
         private Matrix4 projection;
-        public Vector3 Position;
+        
+
         public Vector3 Front;
         public Vector3 Up;
         public Vector3 Right;
-
         // The up direction in world space (constant)
         private readonly Vector3 WorldUp;
+
+        public Vector3 Position;
+        private Vector2? lastPos;
+
 
         // Euler Angles
         public float Yaw;
         public float Pitch;
 
+        // camera settings
+        private float SPEED = 8f;
+        private float SENSITIVITY = 180f;
+
         // Constructor
-        public Camera(float fovy, float height, float width, float depthNear = 0.1f, float depthFar = 100f, float yaw = 0f, float pitch = 0f)
+        public Camera3D(float fovy, float height, float width, float depthNear = 0.1f, float depthFar = 100f, float yaw = 0f, float pitch = 0f)
         {
             fovInfo = new FovInfo
             {
@@ -35,7 +46,7 @@ namespace BlockGame.Rendering
             WorldUp = Vector3.UnitY;
             Yaw = yaw;
             Pitch = pitch;
-
+            lastPos = null;
             Front = new Vector3(0.0f, 0.0f, -1.0f);
             UpdateCameraVectors();
         }
@@ -50,9 +61,7 @@ namespace BlockGame.Rendering
             fovInfo.screenHeight = height;
             fovInfo.screenWidth = width;
 
-            // Ensure division is done in float to get the correct aspect ratio
-            //float aspectRatio = (float)fovInfo.screenWidth / (float)fovInfo.screenHeight;
-            float aspectRatio = 1920f / 1080f;
+            float aspectRatio = 1920f / 1080f; // TODO figure out why it kills itself when it's done using the dynamic height and width.
 
             // Now create the perspective projection using the correct aspect ratio
             projection = Matrix4.CreatePerspectiveFieldOfView(
@@ -62,7 +71,50 @@ namespace BlockGame.Rendering
                 fovInfo.depthFar
             );
         }
+        public void InputController(KeyboardState input, MouseState mouse, FrameEventArgs e) // bug it should not be able to look higher than 180 degrees for obvious reasons.
+        {
 
+            if (input.IsKeyDown(Keys.W))
+            {
+                Position += Front * SPEED * (float)e.Time;
+            }
+            if (input.IsKeyDown(Keys.A))
+            {
+                Position -= Right * SPEED * (float)e.Time;
+            }
+            if (input.IsKeyDown(Keys.S))
+            {
+                Position -= Front * SPEED * (float)e.Time;
+            }
+            if (input.IsKeyDown(Keys.D))
+            {
+                Position += Right * SPEED * (float)e.Time;
+            }
+
+            if (input.IsKeyDown(Keys.Space))
+            {
+                Position.Y += SPEED * (float)e.Time;
+            }
+            if (input.IsKeyDown(Keys.LeftShift))
+            {
+                Position.Y -= SPEED * (float)e.Time;
+            }
+
+            if (lastPos == null)
+            {
+                lastPos = new Vector2(mouse.X, mouse.Y);
+            }
+            else
+            {
+                float deltaX = mouse.X - lastPos.Value.X;
+                float deltaY = mouse.Y - lastPos.Value.Y;
+                lastPos = new Vector2(mouse.X, mouse.Y);
+
+                Yaw += deltaX * SENSITIVITY * (float)e.Time;
+                Pitch -= deltaY * SENSITIVITY * (float)e.Time;
+            }
+            UpdateCameraVectors();
+        }
         public void UpdateCameraVectors()
         {
             float yawRad = MathHelper.DegreesToRadians(Yaw);

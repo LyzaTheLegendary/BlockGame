@@ -13,30 +13,31 @@ namespace BlockGame
 {
     public class Game : GameWindow
     {
-        int vertexArray3D;
-        int vertexArray2D;
         GraphicsDevice device;
+        Camera3D camera3D;
         IResource resource = new RawResource();
-        Camera camera;
-        Renderable block;
-        Texture dirtTexture;
-        
+        ContentPipeLine content;
         ShaderProgram blockProgram;
+
+
+        Renderable mesh;
+        Texture2D dirtTexture;
 
         float xAxis = 0f;
         float yAxis = 0f;
         float angle = 0f;
         public Game() : base(GameWindowSettings.Default, NativeWindowSettings.Default) {
             Title = "BlockGame";
-            camera = new Camera(45f, 1920,1080);
+            camera3D = new Camera3D(45f, 1920f,1080f);
         }
 
-        protected override void OnLoad()
+        protected override void OnLoad() // TODO implement culling
         {
             base.OnLoad();
-            GL.Enable(EnableCap.DepthTest | EnableCap.CullFace);
+            GL.Enable(EnableCap.DepthTest);
 
             device = new GraphicsDevice();
+            content = new ContentPipeLine(device, resource);
             Shader vertexShader = new Shader(ShaderType.VertexShader);
             Shader fragmentShader = new Shader(ShaderType.FragmentShader);
 
@@ -50,31 +51,34 @@ namespace BlockGame
 
             blockProgram.Link();
 
-            Mesh cube = resource.LoadMesh(device, "cube.model");
+            Mesh cube = content.LoadMesh("cube.model");
 
-            block = new(new Vector3(0, 0, 0), cube);
-            dirtTexture = resource.LoadTexture(device, "dirt.png");
-            
+            mesh = new(new Vector3(0, 0, 0), cube);
+            dirtTexture = content.LoadTexture2D("dirt.png");
+            Console.WriteLine(GL.GetInteger(GetPName.MaxTextureImageUnits));
+            CursorState = CursorState.Grabbed;
         }
 
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
             GL.Viewport(0, 0, e.Width, e.Height);
-            camera.UpdateFov(e.Width, e.Height);
+            camera3D.UpdateFov(e.Width, e.Height);
+
         }
         protected override void OnUpdateFrame(FrameEventArgs frameArgs)
         {
             //cube.transformation = Matrix4.CreateRotationY(angle += 0.0001f) * Matrix4.CreateRotationX(angle += 0.0001f) * Matrix4.CreateTranslation(0, 0, -3f);
-            block.SetRotate(angle, angle, angle);
-            block.SetLocation(new Vector3(xAxis, yAxis, 0));
+            mesh.SetRotation(angle, angle, angle);
+            //mesh.SetLocation(new Vector3(angle, 0, 0));
+            //camera.Pitch += angle;
             //block.RotateY(angle);
             //block.RotateX(angle);
             //block.RotateZ(angle);
             xAxis += 0.0002f;
             yAxis += 0.0001f;
             angle += 0.0001f;
-            camera.UpdateCameraVectors();
+            camera3D.InputController(KeyboardState, MouseState, frameArgs);
             base.OnUpdateFrame(frameArgs);
         }
 
@@ -83,8 +87,8 @@ namespace BlockGame
             
             GL.ClearColor(device._background);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            device.Render(block, dirtTexture, blockProgram, camera);
+            camera3D.UpdateCameraVectors();
+            device.Render(mesh, dirtTexture, blockProgram, camera3D);
             //Console.WriteLine(GL.GetError());
             Context.SwapBuffers();
 

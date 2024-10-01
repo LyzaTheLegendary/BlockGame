@@ -16,6 +16,8 @@ namespace BlockGame.Rendering
             SetLocation(location);
         }
 
+        ~Renderable() => _mesh.Delete();
+
         public void RotateX(float angle)
         {
             _transformations = Matrix4.CreateRotationX(angle) * Matrix4.CreateTranslation(0, 0, -3f);
@@ -31,7 +33,7 @@ namespace BlockGame.Rendering
             _transformations = Matrix4.CreateRotationZ(angle) * Matrix4.CreateTranslation(0, 0, -3f);
         }
 
-        public void SetRotate(float angleX, float angleY, float angleZ)
+        public void SetRotation(float angleX, float angleY, float angleZ)
         {
             _transformations = Matrix4.CreateRotationZ(angleZ) * Matrix4.CreateRotationY(angleY) * Matrix4.CreateRotationX(angleX) * Matrix4.CreateTranslation(0, 0, -3f);
         }
@@ -43,15 +45,14 @@ namespace BlockGame.Rendering
 
             _transformations = rotationMatrix * translationMatrix;
 
-            Console.WriteLine(_transformations.ToString());
+            //Console.WriteLine(_transformations.ToString());
             return;
         }
 
-        public void Render(ShaderProgram program, Camera camera)
+        public void Render(ShaderProgram program, Camera3D camera)
         {
             program.SetUniform("model", _transformations);
-            //program.SetUniform("view", Matrix4.Identity); //TODO: fix view
-            program.SetUniform("view", camera.GetViewMatrix()); //TODO: FIX ME I AM BROKEN CYKA
+            program.SetUniform("view", camera.GetViewMatrix());
             program.SetUniform("projection", camera.GetProjectionMatrix());
         }
 

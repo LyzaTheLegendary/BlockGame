@@ -1,4 +1,5 @@
 ﻿using BlockGame.Rendering.Shaders;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace BlockGame.Rendering
@@ -10,6 +11,8 @@ namespace BlockGame.Rendering
         readonly int _vboTexelGraphicsPointer = 0;
         readonly int _iboGraphicsPointer = 0;
         readonly int _vaoGraphicsPointer = 0;
+
+        // owns texture?
 
         //public Matrix4 transformation = Matrix4.CreateTranslation(0, 0, -3f); shouldn't be in here, as this is not the renderable object, it is simply the mesh
         public readonly int VboPointer => _vboGraphicsPointer;
@@ -27,5 +30,10 @@ namespace BlockGame.Rendering
             _vaoGraphicsPointer = vaoPointer;
         }
         public Mesh Clone() => (Mesh)MemberwiseClone();
+
+        public void Delete()
+        {
+            GL.DeleteBuffers(4, new int[] {VboPointer, VboTextPointer, IboPointer, VaoPointer});
+        }
     }
 }

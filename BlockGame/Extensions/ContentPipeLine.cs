@@ -6,11 +6,18 @@ using System.Runtime.InteropServices;
 
 namespace BlockGame.Extensions
 {
-    public static class ContentPipeLine
+    public class ContentPipeLine
     {
-        public static Mesh LoadMesh(this IResource resource, GraphicsDevice device, string filename) // big resources like this should be pooled, Otherwise we get a lot of 3rd level garbage collection...
+        private readonly GraphicsDevice _device;
+        private readonly IResource _resource;
+        public ContentPipeLine(GraphicsDevice device, IResource resource)
         {
-            using (MemoryStream stream = new(resource.Fetch(filename)))
+            _device = device;
+            _resource = resource;
+        }
+        public Mesh LoadMesh(string filename) // big resources like this should be pooled, Otherwise we get a lot of 3rd level garbage collection...
+        {
+            using (MemoryStream stream = new(_resource.Fetch(filename)))
             {
                 Vector3[] vertices = stream.ReadArray<Vector3>();
                 Vector2[] texels = stream.ReadArray<Vector2>();
@@ -20,13 +27,13 @@ namespace BlockGame.Extensions
                 ReadOnlyMemory<byte> texelsBytes = MemoryMarshal.Cast<Vector2, byte>(texels).ToArray();
                 ReadOnlyMemory<byte> indicesBytes = MemoryMarshal.Cast<uint, byte>(indices).ToArray();
 
-                return device.CreateMesh(verticesBytes, texelsBytes, indicesBytes);
+                return _device.CreateMesh(verticesBytes, texelsBytes, indicesBytes);
             }
         }
 
-        public static Texture LoadTexture(this IResource resource, GraphicsDevice device, string filename)
+        public Texture2D LoadTexture2D(string filename)
         {
-            return new Texture(resource.Fetch(filename), device);
+            return new Texture2D(_resource.Fetch(filename), _device);
         }
     }
 }

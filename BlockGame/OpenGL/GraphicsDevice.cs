@@ -16,7 +16,7 @@ namespace BlockGame.OpenGL
         public Color4 _background = Color4.AliceBlue;
         public GraphicsDevice()
         {
-            GL.Enable(EnableCap.DepthTest);
+            
         }
         public int CreateTexture2D(int width, int height, ColorComponents colorComponents, byte[] bitmap)
         {
@@ -79,7 +79,7 @@ namespace BlockGame.OpenGL
 
         public void DeleteTexture(int texturePointer) => GL.DeleteTexture(texturePointer);
 
-        public void Render(Renderable renderableObject, Texture texture, ShaderProgram program, Camera camera) // 3D camera should be here aswell to render
+        public void Render(Renderable renderableObject, Texture2D texture, ShaderProgram program, Camera3D camera) // 3D camera should be here aswell to render
         {
             UseProgram(program);
             renderableObject.Render(program, camera);
@@ -89,7 +89,7 @@ namespace BlockGame.OpenGL
             GL.DrawElements(PrimitiveType.Triangles, mesh.Indices, DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
 
-        private void UseTexture2D(Texture texture)
+        private void UseTexture2D(Texture2D texture)
         {
             GL.BindTextureUnit(0, texture.GlPointer);
             GL.BindTexture(TextureTarget.Texture2D, texture.GlPointer);

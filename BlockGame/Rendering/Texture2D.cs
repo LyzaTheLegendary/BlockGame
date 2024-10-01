@@ -3,7 +3,7 @@ using StbImageSharp;
 
 namespace BlockGame.Rendering
 {
-    public readonly struct Texture
+    public readonly struct Texture2D
     {
         readonly ColorComponents _colorComponents;
         readonly int _height;
@@ -16,7 +16,7 @@ namespace BlockGame.Rendering
         public readonly ColorComponents ColorComponents => _colorComponents;
 
 
-        public Texture(byte[] imageBuffer, GraphicsDevice device)
+        public Texture2D(byte[] imageBuffer, GraphicsDevice device)
         {
             ImageResult imageData = ImageResult.FromMemory(imageBuffer);
 
