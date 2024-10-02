@@ -1,10 +1,11 @@
-﻿using BlockGame.Rendering;
-using BlockGame.Rendering.Shaders;
+﻿using ExodiumEngine.Rendering;
+using ExodiumEngine.Rendering.Shaders;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using StbImageSharp;
+using System.Runtime.CompilerServices;
 
-namespace BlockGame.OpenGL
+namespace ExodiumEngine.OpenGL
 {
     public class GraphicsDevice
     {
@@ -14,10 +15,6 @@ namespace BlockGame.OpenGL
         private int _currIbo = 0;
 
         public Color4 _background = Color4.AliceBlue;
-        public GraphicsDevice()
-        {
-            
-        }
         public int CreateTexture2D(int width, int height, ColorComponents colorComponents, byte[] bitmap)
         {
             int texturePointer = GL.GenTexture();
@@ -36,20 +33,21 @@ namespace BlockGame.OpenGL
         }
 
 
-        // Create one that can do things based on the vbo and text vbo that already exist.
-        public Mesh CreateMesh(ReadOnlyMemory<byte> vertices, ReadOnlyMemory<byte> texelData, ReadOnlyMemory<byte> indicesData, BufferUsageHint bufferHint = BufferUsageHint.StaticDraw) {
+        // Always inline, As we're simply moving memory to the gpu
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Mesh CreateMesh(byte[] vertices, byte[] texelData, byte[] indicesData, BufferUsageHint bufferHint = BufferUsageHint.StaticDraw) {
             int glVertexArrayPointer = GL.GenVertexArray();
             GL.BindVertexArray(glVertexArrayPointer);
 
             int glVboPointer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, glVboPointer);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length, vertices.ToArray(), bufferHint);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length, vertices, bufferHint);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
 
             int glVboTexPointer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, glVboTexPointer);
-            GL.BufferData(BufferTarget.ArrayBuffer, texelData.Length, texelData.ToArray(), BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, texelData.Length, texelData, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.EnableVertexAttribArray(0);
@@ -57,7 +55,7 @@ namespace BlockGame.OpenGL
 
             int glElementArrayPointer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, glElementArrayPointer);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indicesData.Length, indicesData.ToArray(), BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, indicesData.Length, indicesData, BufferUsageHint.StaticDraw);
 
             return new Mesh(glVboPointer, glVboTexPointer, glElementArrayPointer, glVertexArrayPointer, indicesData.Length / sizeof(uint));
         }
@@ -82,7 +80,7 @@ namespace BlockGame.OpenGL
         public void Render(Renderable renderableObject, Texture2D texture, ShaderProgram program, Camera3D camera) // 3D camera should be here aswell to render
         {
             UseProgram(program);
-            renderableObject.Render(program, camera);
+            renderableObject.Render(program, camera); // why matrix not changed????
             UseTexture2D(texture);
             Mesh mesh = renderableObject.GetMesh();
             UseMesh(mesh);            

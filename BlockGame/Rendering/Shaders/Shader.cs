@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using System;
 
-namespace BlockGame.Rendering.Shaders
+namespace ExodiumEngine.Rendering.Shaders
 {
     public ref struct Shader
     {

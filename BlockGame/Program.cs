@@ -1,5 +1,5 @@
-﻿using BlockGame;
-using BlockGame.Extensions;
+﻿using ExodiumEngine;
+using ExodiumEngine.Extensions;
 using OpenTK.Mathematics;
 
 file class Program
@@ -103,7 +103,7 @@ file class Program
         stream.Flush();
         stream.Dispose();
 
-        Game game = new Game();
+        Application game = new Application();
         game.Run();
     }
 }

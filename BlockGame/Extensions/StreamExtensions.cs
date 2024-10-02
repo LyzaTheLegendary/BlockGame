@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace BlockGame.Extensions
+namespace ExodiumEngine.Extensions
 {
     public static class StreamExtensions
     {

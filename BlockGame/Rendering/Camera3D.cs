@@ -3,7 +3,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace BlockGame.Rendering
+namespace ExodiumEngine.Rendering
 {
     public class Camera3D
     {
@@ -71,33 +71,33 @@ namespace BlockGame.Rendering
                 fovInfo.depthFar
             );
         }
-        public void InputController(KeyboardState input, MouseState mouse, FrameEventArgs e) // bug it should not be able to look higher than 180 degrees for obvious reasons.
+        public void InputController(KeyboardState input, MouseState mouse, double time) // bug it should not be able to look higher than 180 degrees for obvious reasons.
         {
 
             if (input.IsKeyDown(Keys.W))
             {
-                Position += Front * SPEED * (float)e.Time;
+                Position += Front * SPEED * (float)time;
             }
             if (input.IsKeyDown(Keys.A))
             {
-                Position -= Right * SPEED * (float)e.Time;
+                Position -= Right * SPEED * (float)time;
             }
             if (input.IsKeyDown(Keys.S))
             {
-                Position -= Front * SPEED * (float)e.Time;
+                Position -= Front * SPEED * (float)time;
             }
             if (input.IsKeyDown(Keys.D))
             {
-                Position += Right * SPEED * (float)e.Time;
+                Position += Right * SPEED * (float)time;
             }
 
             if (input.IsKeyDown(Keys.Space))
             {
-                Position.Y += SPEED * (float)e.Time;
+                Position.Y += SPEED * (float)time;
             }
             if (input.IsKeyDown(Keys.LeftShift))
             {
-                Position.Y -= SPEED * (float)e.Time;
+                Position.Y -= SPEED * (float)time;
             }
 
             if (lastPos == null)
@@ -110,8 +110,8 @@ namespace BlockGame.Rendering
                 float deltaY = mouse.Y - lastPos.Value.Y;
                 lastPos = new Vector2(mouse.X, mouse.Y);
 
-                Yaw += deltaX * SENSITIVITY * (float)e.Time;
-                Pitch -= deltaY * SENSITIVITY * (float)e.Time;
+                Yaw += deltaX * SENSITIVITY * (float)time;
+                Pitch -= deltaY * SENSITIVITY * (float)time;
             }
             UpdateCameraVectors();
         }

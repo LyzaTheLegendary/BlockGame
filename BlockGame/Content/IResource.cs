@@ -1,10 +1,11 @@
-﻿namespace BlockGame.Content
+﻿namespace ExodiumEngine.Content
 {
     public interface IResource
     {
-        public byte[] Fetch(string name);
-        public bool Has(string name);
-        public void Add(string name, byte[] data);
+        public Stream GetReadStreamFrom(string filename);
+        public byte[] Fetch(string filename);
+        public bool Has(string filename);
+        public void Add(string filename, byte[] data);
         public void Remove(string name);
     }
 }

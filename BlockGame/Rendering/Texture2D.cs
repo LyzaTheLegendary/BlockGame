@@ -1,7 +1,7 @@
-﻿using BlockGame.OpenGL;
+﻿using ExodiumEngine.OpenGL;
 using StbImageSharp;
 
-namespace BlockGame.Rendering
+namespace ExodiumEngine.Rendering
 {
     public readonly struct Texture2D
     {
