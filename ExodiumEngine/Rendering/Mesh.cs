@@ -4,22 +4,21 @@ using OpenTK.Mathematics;
 
 namespace ExodiumEngine.Rendering
 {
-    public readonly struct Mesh // idea make one ofthese which represents a normal block, and keep copying this one so we have the same gpu data.
+    public readonly struct Mesh // idea make one of these which represents a normal block, and keep copying this one so we have the same gpu data.
     {
         readonly int m_indicesSize = 0;
         readonly int m_vboGraphicsPointer = 0;
         readonly int m_vboTexelGraphicsPointer = 0;
         readonly int m_iboGraphicsPointer = 0;
         readonly int m_vaoGraphicsPointer = 0;
-
+        readonly int m_shaderProgramPointer = 0;
         readonly Material m_material;
-        // owns texture?
 
-        //public Matrix4 transformation = Matrix4.CreateTranslation(0, 0, -3f); shouldn't be in here, as this is not the renderable object, it is simply the mesh
         public readonly int VboPointer => m_vboGraphicsPointer;
         public readonly int VboTextPointer => m_vboTexelGraphicsPointer;
         public readonly int IboPointer => m_iboGraphicsPointer;
         public readonly int VaoPointer => m_vaoGraphicsPointer;
+        public readonly int ShaderPointer => throw new NotImplementedException("Materials are not implemented yet!"); 
         public readonly int Indices => m_indicesSize;
         public Material Material => throw new NotImplementedException("Materials are not implemented yet!");
 

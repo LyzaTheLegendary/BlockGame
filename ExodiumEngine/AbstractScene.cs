@@ -7,6 +7,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace ExodiumEngine
 {
+    // DO NOT USE CONSTRUCTORS THEY WILL CRASH THE APPLICATION
     public abstract class AbstractScene
     {
         private Application Application => Application.GetInstance();
@@ -19,5 +20,8 @@ namespace ExodiumEngine
         public List<Renderable> GetRenderables() => renderables;
         public abstract ShaderProgram GetShaderProgram();
         public abstract void Update(KeyboardState keyboardState, MouseState mouseState, double gameTime);
+        public abstract void OnLoad();
+        public abstract void OnActivation();
+        public abstract void OnDeactivation();
     }
 }

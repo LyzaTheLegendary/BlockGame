@@ -103,7 +103,10 @@ file class Program
         stream.Flush();
         stream.Dispose();
 
-        Application game = new Application();
+        var scenes = new Dictionary<string, AbstractScene>();
+
+        scenes["test"] = new TestScene();
+        Application game = new Application(scenes,"test", "test");
         game.Run();
     }
 }

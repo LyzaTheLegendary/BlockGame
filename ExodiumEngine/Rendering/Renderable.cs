@@ -54,7 +54,7 @@ namespace ExodiumEngine.Rendering
         public void Render(ShaderProgram program, Camera3D camera)
         {
             program.SetUniform("model", _transformations);
-            Console.WriteLine(_transformations.ToString());
+            //Console.WriteLine(_transformations.ToString());
             program.SetUniform("view", camera.GetViewMatrix());
             program.SetUniform("projection", camera.GetProjectionMatrix());
         }

@@ -17,32 +17,44 @@ namespace ExodiumEngine // rename project to ExodiumEngine
         IResource m_resource;
         ContentPipeLine m_content;
         int m_maxTextureUnits = 0;
-        AbstractScene m_scene;
+
+        readonly Dictionary<string, AbstractScene> m_scenes;
+        AbstractScene m_currScene;
+
+        private string? m_nextScene;
+
+        private FpsInfo m_fpsInfo;
 
         public IResource Resource => m_resource;
         public ContentPipeLine Content => m_content;
         public Camera3D Camera3D => m_camera3D;
         public GraphicsDevice Device => m_device;
-        public AbstractScene Scene => m_scene;
+        public AbstractScene Scene => m_currScene;
         public int MaxTextureUnits => m_maxTextureUnits;
  
-        public Application(string name = "unknown") : base(GameWindowSettings.Default, NativeWindowSettings.Default) {
+        public Application(Dictionary<string, AbstractScene> scenes, string startScene, string name = "unknown") : base(GameWindowSettings.Default, NativeWindowSettings.Default) {
+            
             Title = name;
             m_camera3D = new Camera3D(45f, 1920f, 1080f); // clean up aspect ratio code does not work still
             m_resource = new RawResource();
             m_device = new GraphicsDevice();
             m_content = new ContentPipeLine(m_device, m_resource);
+            m_scenes = scenes;
             s_Instance = this;
+
+            m_currScene = m_scenes[startScene];
         }
 
         protected override void OnLoad() // TODO implement culling
         {
             base.OnLoad();
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front); // idk back culling doesnt work lol
 
-            m_scene = new TestScene();
             m_maxTextureUnits = GL.GetInteger(GetPName.MaxTextureImageUnits);
             CursorState = CursorState.Grabbed;
+            Scene.OnLoad();
         }
 
         protected override void OnResize(ResizeEventArgs e)
@@ -52,14 +64,36 @@ namespace ExodiumEngine // rename project to ExodiumEngine
             m_camera3D.UpdateFov(e.Width, e.Height);
 
         }
-        protected override void OnUpdateFrame(FrameEventArgs frameArgs)
+        protected override void OnUpdateFrame(FrameEventArgs e)
         {
+#if DEBUG
+            m_fpsInfo.frameCount++;
+            m_fpsInfo.frameCurrentTime += e.Time;
+
+            if (m_fpsInfo.frameCurrentTime >= 1.0) // After 1 second
+            {
+                Title = $"FPS: {m_fpsInfo.frameCount}";
+                m_fpsInfo.frameCount = 0;
+                m_fpsInfo.frameCurrentTime = 0.0; // Reset time counter
+            }
+#endif
+            if (m_nextScene != null)
+            {
+                //Signal old scene that it's about to be switched.
+                m_currScene.OnDeactivation();
+
+                m_currScene = m_scenes[m_nextScene];
+                //Signal new scene that it is about to be up.
+                m_currScene.OnActivation();
+                m_nextScene = null;
+            }
+
             if (KeyboardState.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape))
                 Environment.Exit(0);
 
-            m_scene.Update(KeyboardState,MouseState, frameArgs.Time);
-            m_camera3D.UpdateCameraVectors();
-            base.OnUpdateFrame(frameArgs);
+            m_currScene.Update(KeyboardState,MouseState, e.Time);
+            
+            base.OnUpdateFrame(e);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -69,12 +103,18 @@ namespace ExodiumEngine // rename project to ExodiumEngine
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             //GL.MultiDrawElements() singular draw call?
-            foreach(Renderable gameObject in m_scene.GetRenderables())
-                m_device.Render(gameObject, gameObject.GetTexture2D(), m_scene.GetShaderProgram(), Camera3D);
+            foreach(Renderable gameObject in m_currScene.GetRenderables())
+                m_device.Render(gameObject, gameObject.GetTexture2D(), m_currScene.GetShaderProgram(), Camera3D);
             
             Context.SwapBuffers();
             base.OnRenderFrame(args);
         }
+    }
+
+    public struct FpsInfo()
+    {
+        public int frameCount = 0;
+        public double frameCurrentTime = 0f;
     }
 }
     

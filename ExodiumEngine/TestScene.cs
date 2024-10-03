@@ -17,8 +17,22 @@ namespace ExodiumEngine
 
         Texture2D dirtTexture;
         float angle = 0f;
-        
-        public TestScene()
+
+        public override ShaderProgram GetShaderProgram() => blockProgram;
+        public override void Update(KeyboardState keyboardState, MouseState mouseState, double gameTime)
+        {
+            Camera3D.InputController(keyboardState, mouseState, (float)gameTime);
+            float iterator = 0f;
+            foreach (Renderable renderable in renderables)
+            {
+                renderable.SetRotation(angle, angle, angle);
+                renderable.SetLocation(new Vector3(0, iterator++, 0));
+            }
+
+            angle += 0.0001f;
+        }
+
+        public override void OnLoad()
         {
             Shader vertexShader = new Shader(ShaderType.VertexShader);
             Shader fragmentShader = new Shader(ShaderType.FragmentShader);
@@ -36,24 +50,21 @@ namespace ExodiumEngine
             Mesh cube = ContentPipeLine.LoadMesh("cube.model");
             dirtTexture = ContentPipeLine.LoadTexture2D("dirt.png");
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1; i++)
             {
                 renderables.Add(new Renderable(new Vector3(0, i, 0), cube, dirtTexture));
             }
         }
 
-        public override ShaderProgram GetShaderProgram() => blockProgram;
-        public override void Update(KeyboardState keyboardState, MouseState mouseState, double gameTime)
+        public override void OnActivation()
         {
-            Camera3D.InputController(keyboardState, mouseState, gameTime);
-            float iterator = 0f;
-            foreach (Renderable renderable in renderables)
-            {
-                renderable.SetRotation(angle, angle, angle);
-                renderable.SetLocation(new Vector3(0, iterator++, 0));
-            }
 
-            angle += 0.0001f;
         }
+
+        public override void OnDeactivation()
+        {
+
+        }
+
     }
 }

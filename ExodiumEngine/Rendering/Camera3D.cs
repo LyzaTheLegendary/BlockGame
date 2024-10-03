@@ -1,7 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ExodiumEngine.Rendering
 {
@@ -18,7 +16,7 @@ namespace ExodiumEngine.Rendering
         private readonly Vector3 WorldUp;
 
         public Vector3 Position;
-        private Vector2? lastPos;
+        private Vector2 lastPos = new Vector2(0f, 0f);
 
 
         // Euler Angles
@@ -46,7 +44,7 @@ namespace ExodiumEngine.Rendering
             WorldUp = Vector3.UnitY;
             Yaw = yaw;
             Pitch = pitch;
-            lastPos = null;
+            lastPos = new Vector2(0f, 0f);
             Front = new Vector3(0.0f, 0.0f, -1.0f);
             UpdateCameraVectors();
         }
@@ -71,48 +69,45 @@ namespace ExodiumEngine.Rendering
                 fovInfo.depthFar
             );
         }
-        public void InputController(KeyboardState input, MouseState mouse, double time) // bug it should not be able to look higher than 180 degrees for obvious reasons.
+        public void InputController(KeyboardState input, MouseState mouse, float time) // bug it should not be able to look higher than 180 degrees for obvious reasons.
         {
-
             if (input.IsKeyDown(Keys.W))
             {
-                Position += Front * SPEED * (float)time;
+                Position += Front * SPEED * time;
             }
             if (input.IsKeyDown(Keys.A))
             {
-                Position -= Right * SPEED * (float)time;
+                Position -= Right * SPEED * time;
             }
             if (input.IsKeyDown(Keys.S))
             {
-                Position -= Front * SPEED * (float)time;
+                Position -= Front * SPEED * time;
             }
             if (input.IsKeyDown(Keys.D))
             {
-                Position += Right * SPEED * (float)time;
+                Position += Right * SPEED * time;
             }
-
             if (input.IsKeyDown(Keys.Space))
             {
-                Position.Y += SPEED * (float)time;
+                Position.Y += SPEED * time;
             }
             if (input.IsKeyDown(Keys.LeftShift))
             {
-                Position.Y -= SPEED * (float)time;
+                Position.Y -= SPEED * time;
             }
 
-            if (lastPos == null)
-            {
-                lastPos = new Vector2(mouse.X, mouse.Y);
-            }
-            else
-            {
-                float deltaX = mouse.X - lastPos.Value.X;
-                float deltaY = mouse.Y - lastPos.Value.Y;
-                lastPos = new Vector2(mouse.X, mouse.Y);
+            Vector2 currentPos = new Vector2(mouse.X, mouse.Y);
+            
+            if (lastPos == currentPos)
+                return;
 
-                Yaw += deltaX * SENSITIVITY * (float)time;
-                Pitch -= deltaY * SENSITIVITY * (float)time;
-            }
+            float deltaX = mouse.X - lastPos.X;
+            float deltaY = mouse.Y - lastPos.Y;
+            lastPos = currentPos;
+
+            Yaw += deltaX * SENSITIVITY * time; // check if it's more than 180 degrees up or down and otherwise ignore it
+            Pitch -= deltaY * SENSITIVITY * time;
+            
             UpdateCameraVectors();
         }
         public void UpdateCameraVectors()
