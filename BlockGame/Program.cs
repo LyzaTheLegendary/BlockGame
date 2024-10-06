@@ -1,14 +1,13 @@
-﻿using ExodiumEngine;
-using ExodiumEngine.Extensions;
+﻿using ExodiumEngine.Extensions;
+using ExodiumEngine;
 using OpenTK.Mathematics;
 
-file class Program
+internal class Program
 {
-    static void Main()
+    public static void Main()
     {
-        
         Vector3[] triangleVerts = new Vector3[]
-        {
+{
             new Vector3(-0.5f, 0.5f, 0.5f), // topleft vert
             new Vector3(0.5f, 0.5f, 0.5f), // topright vert
             new Vector3(0.5f, -0.5f, 0.5f), // bottomright vert
@@ -38,7 +37,7 @@ file class Program
             new Vector3(0.5f, -0.5f, 0.5f), // topright vert
             new Vector3(0.5f, -0.5f, -0.5f), // bottomright vert
             new Vector3(-0.5f, -0.5f, -0.5f), // bottomleft vert
-        };
+};
 
         Vector2[] texCoords = new Vector2[] {
             new Vector2(0f, 1f),
@@ -107,7 +106,7 @@ file class Program
         var scenes = new Dictionary<string, AbstractScene>();
 
         scenes["test"] = new TestScene();
-        Application game = new Application(scenes,"test", "test");
+        Application game = new Application(scenes, "test", "test");
         game.Run();
     }
 }

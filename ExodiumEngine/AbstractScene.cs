@@ -7,7 +7,6 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace ExodiumEngine
 {
-    // DO NOT USE CONSTRUCTORS THEY WILL CRASH THE APPLICATION
     public abstract class AbstractScene
     {
         private Application Application => Application.GetInstance();

@@ -3,6 +3,7 @@ using StbImageSharp;
 
 namespace ExodiumEngine.Rendering
 {
+    //TODO: implement array textures.
     public readonly struct Texture2D
     {
         readonly ColorComponents _colorComponents;

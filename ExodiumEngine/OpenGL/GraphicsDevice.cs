@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using StbImageSharp;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace ExodiumEngine.OpenGL
 {
@@ -32,9 +33,8 @@ namespace ExodiumEngine.OpenGL
             return texturePointer;
         }
 
-
         // Always inline, As we're simply moving memory to the gpu
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Mesh CreateMesh(byte[] vertices, byte[] texelData, byte[] indicesData, BufferUsageHint bufferHint = BufferUsageHint.StaticDraw) {
             int glVertexArrayPointer = GL.GenVertexArray();
             GL.BindVertexArray(glVertexArrayPointer);
@@ -43,7 +43,6 @@ namespace ExodiumEngine.OpenGL
             GL.BindBuffer(BufferTarget.ArrayBuffer, glVboPointer);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length, vertices, bufferHint);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-
 
             int glVboTexPointer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, glVboTexPointer);
@@ -59,37 +58,73 @@ namespace ExodiumEngine.OpenGL
 
             return new Mesh(glVboPointer, glVboTexPointer, glElementArrayPointer, glVertexArrayPointer, indicesData.Length / sizeof(uint));
         }
-
-        public int CreateVertexArray3D()
+        public int Create2DPlane(Vector2i position, Vector2i size) // TODO: implement me.
         {
-            int glVertexArrayPointer = GL.GenVertexArray();
-            GL.BindVertexArray(glVertexArrayPointer);
 
-            // Position attribute
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-            GL.EnableVertexAttribArray(0);
 
-            // Texture coordinate attribute
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0,0);
-            GL.EnableVertexAttribArray(1);
-            return glVertexArrayPointer;
+            Span<float> vertices = stackalloc float[]
+            {
+                                // Positions         // Texture Coords
+                -1.0f, -1.0f, 0.0f,  0.0f, 0.0f,  // Bottom-left
+                 1.0f, -1.0f, 0.0f,  1.0f, 0.0f,  // Bottom-right
+                 1.0f,  1.0f, 0.0f,  1.0f, 1.0f,  // Top-right
+                -1.0f,  1.0f, 0.0f,  0.0f, 1.0f   // Top-left
+            };
+
+            Span<uint> indices = stackalloc uint[]
+            {
+                0,1,2,3,0
+            };
+
+            Span<float> texels = stackalloc float[]
+            {
+                0.0f, 0.0f,  // Bottom-left
+                1.0f, 0.0f,  // Bottom-right
+                1.0f, 1.0f,  // Top-right
+                0.0f, 1.0f   // Top-left
+            };
+
+
+            Span<byte> vertexBuffer = stackalloc byte[vertices.Length + Marshal.SizeOf<Vector4i>()];
+
+            void WriteToBuffer(int offset, int length, scoped Span<byte> buffer, Vector2i position)
+            {
+                unsafe
+                {
+                    byte* positionPtr = (byte*)&position;
+                    for (int i = offset; i < offset + length; i++)
+                        buffer[i] = positionPtr[i];
+                }
+            }
+
+
+
+
+            WriteToBuffer(0, Marshal.SizeOf<Vector2i>(), vertexBuffer, position);
+            WriteToBuffer(Marshal.SizeOf<Vector2i>(), Marshal.SizeOf<Vector2i>(), vertexBuffer, size);
+
+            int glVaoPointer = GL.GenVertexArray();
+            GL.BindVertexArray(glVaoPointer);
+
+            // layout position -> vertex data -> texel data : for shader
+
+            return 0;
         }
-
         public void DeleteTexture(int texturePointer) => GL.DeleteTexture(texturePointer);
 
-        public void Render(Renderable renderableObject, Texture2D texture, ShaderProgram program, Camera3D camera) // 3D camera should be here aswell to render
+        public void Render(Renderable renderableObject, Texture2D texture, ShaderProgram program, Camera3D camera)
         {
             UseProgram(program);
-            renderableObject.Render(program, camera); // why matrix not changed????
+            renderableObject.Render(program, camera);
             UseTexture2D(texture);
             Mesh mesh = renderableObject.GetMesh();
             UseMesh(mesh);            
             GL.DrawElements(PrimitiveType.Triangles, mesh.Indices, DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
 
-        private void UseTexture2D(Texture2D texture)
+        private void UseTexture2D(Texture2D texture, int unit = 0)
         {
-            GL.BindTextureUnit(0, texture.GlPointer);
+            GL.BindTextureUnit(unit, texture.GlPointer);
             GL.BindTexture(TextureTarget.Texture2D, texture.GlPointer);
         }
 

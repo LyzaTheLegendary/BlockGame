@@ -5,15 +5,19 @@ using ExodiumEngine.Rendering;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace ExodiumEngine // rename project to ExodiumEngine
+namespace ExodiumEngine
 {
     public class Application : GameWindow // TODO create a texture manager
     {
         static private Application s_Instance;
         public static Application GetInstance() => s_Instance;
-        GraphicsDevice m_device;
+        
         Camera3D m_camera3D;
+        Camera2D m_camera2D;
+        GraphicsDevice m_device;
+
         IResource m_resource;
         ContentPipeLine m_content;
         int m_maxTextureUnits = 0;
@@ -28,6 +32,7 @@ namespace ExodiumEngine // rename project to ExodiumEngine
         public IResource Resource => m_resource;
         public ContentPipeLine Content => m_content;
         public Camera3D Camera3D => m_camera3D;
+        public Camera2D Camera2D => m_camera2D;
         public GraphicsDevice Device => m_device;
         public AbstractScene Scene => m_currScene;
         public int MaxTextureUnits => m_maxTextureUnits;
@@ -45,15 +50,17 @@ namespace ExodiumEngine // rename project to ExodiumEngine
             m_currScene = m_scenes[startScene];
         }
 
-        protected override void OnLoad() // TODO implement culling
+        protected override void OnLoad()
         {
             base.OnLoad();
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front); // idk back culling doesnt work lol
-
+            GL.CullFace(CullFaceMode.Front); // idk back culling does not work lol
+            
             m_maxTextureUnits = GL.GetInteger(GetPName.MaxTextureImageUnits);
             CursorState = CursorState.Grabbed;
+
+            //VSync = VSyncMode.On;
             Scene.OnLoad();
         }
 
@@ -70,11 +77,11 @@ namespace ExodiumEngine // rename project to ExodiumEngine
             m_fpsInfo.frameCount++;
             m_fpsInfo.frameCurrentTime += e.Time;
 
-            if (m_fpsInfo.frameCurrentTime >= 1.0) // After 1 second
+            if (m_fpsInfo.frameCurrentTime >= 1.0)
             {
                 Title = $"FPS: {m_fpsInfo.frameCount}";
                 m_fpsInfo.frameCount = 0;
-                m_fpsInfo.frameCurrentTime = 0.0; // Reset time counter
+                m_fpsInfo.frameCurrentTime = 0.0;
             }
 #endif
             if (m_nextScene != null)
@@ -88,7 +95,7 @@ namespace ExodiumEngine // rename project to ExodiumEngine
                 m_nextScene = null;
             }
 
-            if (KeyboardState.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape))
+            if (KeyboardState.IsKeyDown(Keys.Escape))
                 Environment.Exit(0);
 
             m_currScene.Update(KeyboardState,MouseState, e.Time);
@@ -98,12 +105,11 @@ namespace ExodiumEngine // rename project to ExodiumEngine
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            
             GL.ClearColor(m_device._background);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             //GL.MultiDrawElements() singular draw call?
-            foreach(Renderable gameObject in m_currScene.GetRenderables())
+            foreach(Renderable gameObject in m_currScene.GetRenderables()) // create a render manager, As we should manage the order we render things as many things should just use the same shader.
                 m_device.Render(gameObject, gameObject.GetTexture2D(), m_currScene.GetShaderProgram(), Camera3D);
             
             Context.SwapBuffers();

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExodiumEngine", "ExodiumEngine\ExodiumEngine.csproj", "{D1FA51B3-36A1-45BE-B82E-DA3DA50BD62E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockGame", "BlockGame\BlockGame.csproj", "{CC60BDA1-CE79-4E3F-99AC-D3C8265DC79F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D1FA51B3-36A1-45BE-B82E-DA3DA50BD62E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1FA51B3-36A1-45BE-B82E-DA3DA50BD62E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1FA51B3-36A1-45BE-B82E-DA3DA50BD62E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC60BDA1-CE79-4E3F-99AC-D3C8265DC79F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC60BDA1-CE79-4E3F-99AC-D3C8265DC79F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC60BDA1-CE79-4E3F-99AC-D3C8265DC79F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC60BDA1-CE79-4E3F-99AC-D3C8265DC79F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -37,8 +37,8 @@ namespace ExodiumEngine
             Shader vertexShader = new Shader(ShaderType.VertexShader);
             Shader fragmentShader = new Shader(ShaderType.FragmentShader);
 
-            vertexShader.Compile(Encoding.UTF8.GetString(Resource.Fetch("block.vert")));
-            fragmentShader.Compile(Encoding.UTF8.GetString(Resource.Fetch("block.frag")));
+            vertexShader.Compile(Encoding.UTF8.GetString(Resource.Fetch("entity.vert")));
+            fragmentShader.Compile(Encoding.UTF8.GetString(Resource.Fetch("entity.frag")));
 
             blockProgram = new ShaderProgram();
 

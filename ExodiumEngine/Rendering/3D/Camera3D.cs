@@ -8,7 +8,6 @@ namespace ExodiumEngine.Rendering
         private FovInfo fovInfo;
         private Matrix4 projection;
         
-
         public Vector3 Front;
         public Vector3 Up;
         public Vector3 Right;
